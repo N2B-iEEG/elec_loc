@@ -50,11 +50,14 @@ end
 fprintf('\nCoregistered CT saved at %s\n\n', ct_coreg_path)
 
 %% Visualize coreg results in freeview
+fprintf(['Visualizing T1-CT coregistration with freeview\n' ...
+    '================================================================================\n'])
+
 bash_code = fs_setup_code(config);
 bash_code = sprintf('%s; freeview -v %s -v %s:colormap=jet', ...
     bash_code, t1_path, ct_coreg_path);
-fprintf(['Visualizing T1-CT coregistration with freeview\n' ...
-    '================================================================================\n'])
+
+if ispc, bash_code = ['wsl' bash_code]; end
 system(bash_code);
 
 end
