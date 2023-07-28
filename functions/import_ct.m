@@ -4,7 +4,7 @@ ct_dir = fullfile(pat.dir, 'ct');
 if ~exist(ct_dir, 'dir'), mkdir(ct_dir), end
 ct_t_path = fullfile(ct_dir, 'postop_ct.nii');
 
-[ct_s_name, ct_s_dir] = uigetfile({'*.nii';'*.nii.gz';'*.mgz'}, ...
+[ct_s_name, ct_s_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
     'Select post-op CT image');
 ct_s_path = fullfile(ct_s_dir, ct_s_name);
 
@@ -19,7 +19,6 @@ else % Convert to .nii if in another format
     bash_code = sprintf('%s; mri_convert %s %s', ...
         fs_setup_code(config), ct_s_path, ct_t_path);
 
-    if ispc, bash_code = ['wsl' bash_code]; end
     system(bash_code);
 
 end

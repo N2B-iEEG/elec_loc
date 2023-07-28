@@ -14,7 +14,6 @@ end
 fprintf('Converting .mgz to .nii in %s\n================================================================================\n', ...
     pat_mri_dir)
 
-if ispc, bash_code = ['wsl' bash_code]; end
 system(bash_code);
 
 fprintf('mgz2nii conversion completed\n================================================================================\n')
