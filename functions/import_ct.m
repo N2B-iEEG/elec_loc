@@ -5,7 +5,7 @@ if ~exist(ct_dir, 'dir'), mkdir(ct_dir), end
 ct_t_path = fullfile(ct_dir, 'postop_ct.nii');
 
 [ct_s_name, ct_s_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
-    'Select post-op CT image');
+    'Select post-op CT scan');
 ct_s_path = fullfile(ct_s_dir, ct_s_name);
 
 if endsWith(ct_s_path, '.nii')
