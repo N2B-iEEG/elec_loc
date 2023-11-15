@@ -1,6 +1,6 @@
 function t1_ct_coreg(config, pat, method)
 
-t1_path = fullfile(pat.dir, 'mri', 'orig.nii');
+t1_path = fullfile(pat.dir, 'mri', 'nu.nii');
 ct_dir  = fullfile(pat.dir, 'ct');
 ct_path = fullfile(ct_dir, 'postop_ct.nii');
 if ~exist(ct_path, 'file')

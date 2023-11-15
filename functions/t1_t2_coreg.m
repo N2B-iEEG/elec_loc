@@ -1,6 +1,6 @@
 function t1_t2_coreg(config, pat, method)
 
-t1_path = fullfile(pat.dir, 'mri', 'orig.nii');
+t1_path = fullfile(pat.dir, 'mri', 'nu.nii');
 t2_dir  = fullfile(pat.dir, 't2');
 t2_path = fullfile(t2_dir, 't2.nii');
 if ~exist(t2_path, 'file')
