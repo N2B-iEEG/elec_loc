@@ -1,10 +1,9 @@
-function scan_acpc_path = el_auto_acpc(scan_path)
+function el_auto_acpc(input_path, output_path)
 
-% Create a copy with "_acpc" suffix
-scan_acpc_path = strrep(scan_path, '.nii', '_acpc.nii');
-copyfile(scan_path, scan_acpc_path)
+% Create a copy with output name
+copyfile(input_path, output_path)
 
 % Automatic reorientation
-auto_acpc_reorient(scan_acpc_path)
+auto_acpc_reorient(output_path)
 
 end

@@ -1,10 +1,7 @@
-function scan_center_path = el_center(scan_path)
-
-% Create a copy with "_cent" suffix
-scan_center_path = strrep(scan_path, '.nii', '_cent.nii');
+function el_center(input_path, output_path)
 
 % Load the scan
-scan_spm = spm_vol(char(scan_path));
+scan_spm = spm_vol(char(input_path));
 
 % Read the image data
 scan_img = spm_read_vols(scan_spm);
@@ -24,7 +21,7 @@ translation_matrix(1:3, 4) = -translation;
 scan_spm.mat = translation_matrix * scan_spm.mat;
 
 % Save the centered scan
-scan_spm.fname = char(scan_center_path);
+scan_spm.fname = char(output_path);
 spm_write_vol(scan_spm, scan_img);
 
 end

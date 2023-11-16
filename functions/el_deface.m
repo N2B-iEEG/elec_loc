@@ -1,6 +1,6 @@
-function deface_path = el_deface(t1_path)
+function el_deface(t1_path, deface_path)
 
-deface_path = strrep(t1_path, '.nii', '_deface.nii');
+% Create copy
 copyfile(t1_path, deface_path)
 
 % Defacing
