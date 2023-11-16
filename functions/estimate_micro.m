@@ -58,7 +58,7 @@ if no_u_count ~= 0
     idx = strfind(elec_fn, '.');
     output_fn = fullfile(elec_dir, [elec_fn(1:idx-1), '_u', elec_fn(idx:end)]);
     writetable(data, output_fn, 'Delimiter', ' ', 'WriteVariableNames', false);
-    fprintf('New txt saved: %s\n', output_fn)
+    fprintf('New txt saved at: %s\n', output_fn)
 else
     fprintf('%s already have microwire estimates. No further operation\n', fullfile(elec_dir, elec_fn))
 end

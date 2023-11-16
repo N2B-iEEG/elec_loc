@@ -1,0 +1,9 @@
+[submodule "external/dicm2nii"]
+	path = external/dicm2nii
+	url = https://github.com/xiangruili/dicm2nii
+[submodule "external/spm12"]
+	path = external/spm12
+	url = https://github.com/spm/spm12
+[submodule "external/auto_acpc_reorient"]
+	path = external/auto_acpc_reorient
+	url = https://github.com/lrq3000/auto_acpc_reorient
