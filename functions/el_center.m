@@ -1,5 +1,7 @@
 function el_center(input_path, output_path)
 
+fprintf('>>>>>Centering %s\n', input_path)
+
 % Load the scan
 scan_spm = spm_vol(char(input_path));
 
@@ -23,5 +25,7 @@ scan_spm.mat = translation_matrix * scan_spm.mat;
 % Save the centered scan
 scan_spm.fname = char(output_path);
 spm_write_vol(scan_spm, scan_img);
+
+fprintf('>>>>>Centered scan saved at %s\n\n', output_path)
 
 end

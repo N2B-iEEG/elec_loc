@@ -70,65 +70,55 @@ if strcmp(org_mode, 'i')
     [t1_name, t1_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
         'Select pre-op T1 MRI');
     copyfile(fullfile(t1_dir, t1_name), pat.t1.raw)
+    cd(t1_dir)
 
     % Import CT
     [ct_name, ct_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
         'Select post-op CT');
     copyfile(fullfile(ct_dir, ct_name), pat.ct.raw)
+    cd(ct_dir)
 
     % Import T2
     if have_t2
         [t2_name, t2_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
             'Select pre-op T2 MRI');
         copyfile(fullfile(t2_dir, t2_name), pat.t2.raw)
+        cd(t2_dir)
     end
 
     % T1 preprocessing
 
-    % Center
-    fprintf('Centering T1 scan\n')
+    fprintf('**********PROCESSING T1**********\n\n')
+
+    % Center, align to ACPC, and deface
     el_center(pat.t1.raw, pat.t1.cent);
-
-    % AC-PC
-    fprintf('Aligning T1 to AC-PC line\n')
     el_auto_acpc(pat.t1.cent, pat.t1.acpc);
-
-    % Deface
     waitfor(msgbox(sprintf(['Next we will perform defacing.\n\n' ...
         'Once the computation is done, you will see the defaced (red) T1 scan ' ...
         'overlaid on top of the original scan (grayscale).\n\n' ...
         'If the result seems satisfactory, click "Overwrite the source file".\n\n' ...
         'If not, click "Bad result & disp file name"']), ...
         'T1 defacing'));
-    fprintf('De-facing T1\n')
     el_deface(pat.t1.acpc, pat.t1.deface);
 
     % CT preprocessing
 
-    % Center
-    fprintf('Centering CT scan\n')
+    fprintf('**********PROCESSING CT**********\n\n')
+
+    % Center, coregister, mask to deface
     el_center(pat.ct.raw, pat.ct.cent);
-
-    % Co-registration
-    fprintf('Coregistering CT to T1\n')
     el_coreg(pat.t1.acpc, pat.ct.cent, pat.ct.coreg);
-
-    % Deface using T1 mask
-    deface_mask(pat.t1.deface, pat.ct.coreg, pat.ct.deface);
+    el_mask(pat.t1.deface, pat.ct.coreg, pat.ct.deface);
 
     % T2 preprocessing
     if have_t2
 
-        % Center
-        fprintf('Centering T2 scan\n')
+        fprintf('**********PROCESSING T2**********\n\n')
+
+        % Center, coregister, mask to deface
         el_center(pat.t2.raw, pat.t2.cent);
-
-        % Co-registration
-        fprintf('Coregistering T2 to T1\n')
         el_coreg(pat.t1.acpc, pat.t2.cent, pat.t2.coreg);
-
-        % Deface using T1 mask
-        deface_mask(pat.t1.deface, pat.t2.coreg, pat.t2.deface);
+        el_mask(pat.t1.deface, pat.t2.coreg, pat.t2.deface);
 
     end
 
@@ -154,13 +144,3 @@ disp(dirs_files)
 
 end
 
-function deface_mask(t1_def, other_path, other_def_path)
-
-[pth,nm,ext,num] = spm_fileparts(other_path);
-spm_o_path = fullfile(pth, strcat('m', nm, ext, num));
-
-Vi = [spm_vol(char(t1_def)), spm_vol(char(other_path))];
-
-spm_imcalc(Vi, char(other_def_path), '(i1~=0).*i2');
-
-end
