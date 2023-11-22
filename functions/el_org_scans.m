@@ -11,45 +11,40 @@ if ~exist(pat.dir, 'dir')
     mkdir(pat.dir)
 end
 
-if ~exist(fullfile(pat.dir, 'mri'), 'dir')
-    mkdir(fullfile(pat.dir, 'mri'))
+pat.dir_iel = fullfile(pat.dir, 'iel');
+if ~exist(pat.dir_iel, 'dir')
+    mkdir(pat.dir_iel)
 end
 
-pat.t1.orig_dir = fullfile(pat.dir, 'mri', 'orig');
-if ~exist(pat.t1.orig_dir, 'dir')
-    mkdir(pat.t1.orig_dir)
-end
-pat.t1.raw    = fullfile(pat.t1.orig_dir, 't1.nii');
-pat.t1.cent   = fullfile(pat.t1.orig_dir, 't1_cent.nii');
-pat.t1.acpc   = fullfile(pat.t1.orig_dir, 't1_cent_acpc.nii');
-pat.t1.deface = fullfile(pat.t1.orig_dir, 't1_cent_acpc_deface.nii');
+sub_name = sprintf('sub-%s_', pat.id);
 
-pat.ct.dir = fullfile(pat.dir, 'ct');
-if ~exist(pat.ct.dir, 'dir')
-    mkdir(pat.ct.dir)
-end
-pat.ct.raw    = fullfile(pat.ct.dir, 'ct.nii');
-pat.ct.cent   = fullfile(pat.ct.dir, 'ct_cent.nii');
-pat.ct.coreg  = fullfile(pat.ct.dir, 'ct_cent_coreg.nii');
-pat.ct.deface = fullfile(pat.ct.dir, 'ct_cent_coreg_deface.nii');
+pat.t1.raw    = fullfile(pat.dir_iel, [sub_name, 'T1w_raw.nii']);
+pat.t1.cent   = fullfile(pat.dir_iel, [sub_name, 'T1w_cent.nii']);
+pat.t1.acpc   = fullfile(pat.dir_iel, [sub_name, 'T1w_cent_acpc.nii']);
+pat.t1.deface = fullfile(pat.dir_iel, [sub_name, 'T1w_cent_acpc_deface.nii']);
+pat.t1.final  = fullfile(pat.dir_iel, [sub_name, 'T1w.nii']);
 
-pat.t2.dir = fullfile(pat.dir, 't2');
-if ~exist(pat.t2.dir, 'dir')
-    mkdir(pat.t2.dir)
-end
+pat.ct.raw    = fullfile(pat.dir_iel, [sub_name, 'CT_raw.nii']);
+pat.ct.cent   = fullfile(pat.dir_iel, [sub_name, 'CT_cent.nii']);
+pat.ct.coreg  = fullfile(pat.dir_iel, [sub_name, 'CT_cent_coreg.nii']);
+pat.ct.deface = fullfile(pat.dir_iel, [sub_name, 'CT_cent_coreg_deface.nii']);
+pat.ct.final  = fullfile(pat.dir_iel, [sub_name, 'CT.nii']);
+
 if have_t2
-    pat.t2.raw    = fullfile(pat.t2.dir, 't2.nii');
-    pat.t2.cent   = fullfile(pat.t2.dir, 't2_cent.nii');
-    pat.t2.coreg  = fullfile(pat.t2.dir, 't2_cent_coreg.nii');
-    pat.t2.deface = fullfile(pat.t2.dir, 't2_cent_coreg_deface.nii');
+    pat.t2.raw    = fullfile(pat.dir_iel, [sub_name, 'T2w_raw.nii']);
+    pat.t2.cent   = fullfile(pat.dir_iel, [sub_name, 'T2w_cent.nii']);
+    pat.t2.coreg  = fullfile(pat.dir_iel, [sub_name, 'T2w_cent_coreg.nii']);
+    pat.t2.deface = fullfile(pat.dir_iel, [sub_name, 'T2w_cent_coreg_deface.nii']);
+    pat.t2.final  = fullfile(pat.dir_iel, [sub_name, 'T2w.nii']);
 end
 
-dirs_files = [
-    struct2cell(pat.t1);
-    struct2cell(pat.ct);
-    struct2cell(pat.t2)];
+if have_t2
+    dirs_files = [pat.t1.final; pat.ct.final; pat.t2.final];
+else
+    dirs_files = [pat.t1.final; pat.ct.final];
+end
 
-%% Read mode - check if all files exist
+%% Read mode - check if final files exist
 if strcmp(org_mode, 'r')
 
     for dir_file = dirs_files'
@@ -137,7 +132,15 @@ if strcmp(org_mode, 'i')
 
     end
 
+    movefile(pat.t1.deface, pat.t1.final)
+    movefile(pat.ct.deface, pat.ct.final)
+    if have_t2
+        movefile(pat.t2.deface, pat.t2.final)
+    end
+
 end
+
+delete(fullfile(pat.dir_iel, sprintf('%s*_*.nii', sub_name)))
 
 fprintf('Directories and files:\n')
 disp(dirs_files)

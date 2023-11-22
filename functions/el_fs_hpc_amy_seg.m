@@ -15,12 +15,12 @@ elseif strcmp(seg_option, 'T2')
 
     % segmentHA_T2.sh bert FILE_ADDITIONAL_SCAN ANALYSIS_ID USE_T1
     bash_code = sprintf('%s; segmentHA_T2.sh %s %s T2 0', ...
-        bash_code, pat.name, pat.t2.deface);
+        bash_code, pat.name, pat.t2.final);
 
 elseif strcmp(seg_option, 'T1+T2')
 
-    bash_code = sprintf('%s; segmentHA_T2.sh %s %s T1_T2 1', ...
-        bash_code, pat.name, pat.t2.deface);
+    bash_code = sprintf('%s; segmentHA_T2.sh %s %s T2 1', ...
+        bash_code, pat.name, pat.t2.final);
 
 end
 

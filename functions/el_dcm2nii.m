@@ -17,7 +17,7 @@ while true % Loop for conversions of multiple scans
     cd(scan_dir)
 
     % Anonymize DICOM
-    anonymize_dicm(scan_dir, scan_dir, char(pat.name))
+    anonymize_dicm(scan_dir, scan_dir, char(pat.id))
 
     % Convert to NIFTI
     dicm2nii(scan_dir, scan_dir, '.nii')
