@@ -12,7 +12,7 @@ iel_dir = fullfile(pat.dir, 'iel');
     'Select iElectrodes output txt');
 elec_path = fullfile(elec_dir, elec_fn);
 
-output_path = fullfile(iel_dir, strcat(pat.name, '_elec_native.csv'));
+output_path = fullfile(iel_dir, strcat(pat.id, '_elec_native.csv'));
 
 % List of atlases to read from
 atlases = {'aparc.a2009s+aseg', 'aparc.DKTatlas+aseg'};

@@ -31,10 +31,10 @@ iel_dir = fullfile(pat.dir, 'iel');
     'Select iElectrodes output txt');
 elec_path = fullfile(elec_dir, elec_fn);
 
-csv_305_path = fullfile(iel_dir, strcat(pat.name, '_elec_mni305.csv'));
-node_305_path = fullfile(iel_dir, strcat(pat.name, '_elec_mni305.node'));
-csv_152_path = fullfile(iel_dir, strcat(pat.name, '_elec_mni152.csv'));
-node_152_path = fullfile(iel_dir, strcat(pat.name, '_elec_mni152.node'));
+csv_305_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni305.csv'));
+node_305_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni305.node'));
+csv_152_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni152.csv'));
+node_152_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni152.node'));
 
 % Open input and output file
 elec_fid = fopen(elec_path, 'r');
