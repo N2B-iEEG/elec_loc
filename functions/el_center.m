@@ -1,12 +1,17 @@
-function el_center(input_path, output_path)
+function el_center(input_path, output_path, demean)
 
 fprintf('>>>>>Centering %s\n', input_path)
 
 % Load the scan
 scan_spm = spm_vol(char(input_path));
 
-% Read the image data
+% Read the 3D image data
 scan_img = spm_read_vols(scan_spm);
+
+% Demean data
+if demean
+    scan_img = scan_img - round(mean(scan_img, 'all'));
+end
 
 % Calculate the center of the volume
 [nx, ny, nz] = size(scan_img);

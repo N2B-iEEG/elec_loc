@@ -28,6 +28,7 @@ pat.ct.raw    = fullfile(pat.dir_iel, [sub_name, 'CT_raw.nii']);
 pat.ct.cent   = fullfile(pat.dir_iel, [sub_name, 'CT_cent.nii']);
 pat.ct.coreg  = fullfile(pat.dir_iel, [sub_name, 'CT_cent_coreg.nii']);
 pat.ct.deface = fullfile(pat.dir_iel, [sub_name, 'CT_cent_coreg_deface.nii']);
+pat.ct.thres  = fullfile(pat.dir_iel, [sub_name, 'CT_cent_coreg_deface_thres.nii']);
 pat.ct.final  = fullfile(pat.dir_iel, [sub_name, 'CT.nii']);
 
 if have_t2
@@ -64,36 +65,40 @@ if strcmp(org_mode, 'i')
     % Import T1
     [t1_name, t1_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
         'Select pre-op T1 MRI');
-    copyfile(fullfile(t1_dir, t1_name), pat.t1.raw)
     cd(t1_dir)
 
     % Import CT
     [ct_name, ct_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
         'Select post-op CT');
-    copyfile(fullfile(ct_dir, ct_name), pat.ct.raw)
     cd(ct_dir)
 
     % Import T2
     if have_t2
         [t2_name, t2_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
             'Select pre-op T2 MRI');
-        copyfile(fullfile(t2_dir, t2_name), pat.t2.raw)
         cd(t2_dir)
+        copyfile(fullfile(t2_dir, t2_name), pat.t2.raw)
     end
+
+    copyfile(fullfile(t1_dir, t1_name), pat.t1.raw)
+    copyfile(fullfile(ct_dir, ct_name), pat.ct.raw)
 
     % T1 preprocessing
 
     fprintf('**********PROCESSING T1**********\n\n')
 
     % Center, align to ACPC, and deface
-    el_center(pat.t1.raw, pat.t1.cent);
+    el_center(pat.t1.raw, pat.t1.cent, false);
     el_auto_acpc(pat.t1.cent, pat.t1.acpc);
-    waitfor(msgbox(sprintf(['Next we will perform defacing.\n\n' ...
+
+    % Show deface instruction message box
+    msg = msgbox(sprintf(['Next we will perform defacing.\n\n' ...
         'Once the computation is done, you will see the defaced (red) T1 scan ' ...
         'overlaid on top of the original scan (grayscale).\n\n' ...
         'If the result seems satisfactory, click "Overwrite the source file".\n\n' ...
         'If not, click "Bad result & disp file name"']), ...
-        'T1 defacing'));
+        'T1 defacing', 'help');
+
     el_deface(pat.t1.acpc, pat.t1.deface);
 
     % CT preprocessing
@@ -101,9 +106,21 @@ if strcmp(org_mode, 'i')
     fprintf('**********PROCESSING CT**********\n\n')
 
     % Center, coregister, mask to deface
-    el_center(pat.ct.raw, pat.ct.cent);
+    el_center(pat.ct.raw, pat.ct.cent, false);
     el_coreg(pat.t1.acpc, pat.ct.cent, pat.ct.coreg);
     el_mask(pat.t1.deface, pat.ct.coreg, pat.ct.deface);
+
+    % Determine optimal CT threshold
+    nii_viewer(pat.ct.deface)
+    opts.WindowStyle = 'normal';
+    ct_thres = inputdlg('Enter optimal CT threshold to show only bones and electrodes', ...
+        'CT thresholding', [1 40], {''}, opts);
+    close all hidden
+
+    % Threshold CT
+    if ~isempty(ct_thres)
+        el_thres(pat.ct.deface, pat.ct.thres, sprintf('i1>%d', str2double(ct_thres)))
+    end
 
     % T2 preprocessing
     if have_t2
@@ -111,7 +128,7 @@ if strcmp(org_mode, 'i')
         fprintf('**********PROCESSING T2**********\n\n')
 
         % Center, coregister, mask to deface
-        el_center(pat.t2.raw, pat.t2.cent);
+        el_center(pat.t2.raw, pat.t2.cent, false);
         el_coreg(pat.t1.acpc, pat.t2.cent, pat.t2.coreg);
         el_mask(pat.t1.deface, pat.t2.coreg, pat.t2.deface);
 
@@ -120,20 +137,20 @@ if strcmp(org_mode, 'i')
     % Check results in nii_viewer
     if have_t2
 
-        waitfor(nii_viewer( ...
+        nii_viewer( ...
             pat.t1.deface, ...
-            {pat.t2.deface, pat.ct.deface}))
+            {pat.t2.deface, pat.ct.thres})
 
     else
 
-        waitfor(nii_viewer( ...
+        nii_viewer( ...
             pat.t1.deface, ...
-            {pat.ct.deface}))
+            {pat.ct.thres})
 
     end
 
     movefile(pat.t1.deface, pat.t1.final)
-    movefile(pat.ct.deface, pat.ct.final)
+    movefile(pat.ct.thres, pat.ct.final)
     if have_t2
         movefile(pat.t2.deface, pat.t2.final)
     end
