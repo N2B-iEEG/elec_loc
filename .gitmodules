@@ -7,3 +7,6 @@
 [submodule "external/auto_acpc_reorient"]
 	path = external/auto_acpc_reorient
 	url = https://github.com/lrq3000/auto_acpc_reorient
+[submodule "external/BrainNet-Viewer"]
+	path = external/BrainNet-Viewer
+	url = https://github.com/mingruixia/BrainNet-Viewer

@@ -31,9 +31,9 @@ iel_dir = fullfile(pat.dir, 'iel');
     'Select iElectrodes output txt');
 elec_path = fullfile(elec_dir, elec_fn);
 
-csv_305_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni305.csv'));
+csv_305_path  = fullfile(iel_dir, strcat(pat.id, '_elec_mni305.csv'));
 node_305_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni305.node'));
-csv_152_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni152.csv'));
+csv_152_path  = fullfile(iel_dir, strcat(pat.id, '_elec_mni152.csv'));
 node_152_path = fullfile(iel_dir, strcat(pat.id, '_elec_mni152.node'));
 
 % Open input and output file
@@ -44,12 +44,12 @@ csv_152_fid  = fopen(csv_152_path, 'w');
 node_152_fid = fopen(node_152_path, 'w');
 
 % Write first line (header) of output file
-header_txt = repmat('%s, ', 1, 4);
-header_txt = header_txt(1:end-2);
+hdr_txt = repmat('%s, ', 1, 4);
+hdr_txt = hdr_txt(1:end-2);
 columns = [{'channel'}, {'x_mni305'}, {'y_mni305'}, {'z_mni305'}];
-fprintf(csv_305_fid, [header_txt '\n'], columns{:});
+fprintf(csv_305_fid, [hdr_txt '\n'], columns{:});
 columns = [{'channel'}, {'x_mni152'}, {'y_mni152'}, {'z_mni152'}];
-fprintf(csv_152_fid, [header_txt '\n'], columns{:});
+fprintf(csv_152_fid, [hdr_txt '\n'], columns{:});
 
 % Read first line of elec file
 elec_line = fgetl(elec_fid);

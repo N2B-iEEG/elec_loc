@@ -119,7 +119,7 @@ if strcmp(org_mode, 'i')
 
     % Threshold CT
     if ~isempty(ct_thres)
-        el_thres(pat.ct.deface, pat.ct.thres, sprintf('i1>%d', str2double(ct_thres)))
+        el_thres(pat.ct.deface, pat.ct.thres, sprintf('i1.*(i1>%d)', str2double(ct_thres)))
     end
 
     % T2 preprocessing
