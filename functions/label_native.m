@@ -36,28 +36,42 @@ elec_line = fgetl(elec_fid);
 while ischar(elec_line)
 
     parts = strsplit(elec_line, ' ');
-    coord_mm = str2double(parts(2:4));
+
+    ch_name = parts{1};
+
+    if strcmp(ch_name(end), 'u')
+        node_size = 0.5;
+    else
+        node_size = 1;
+    end
+
+    coord_nat = str2double(parts(2:4));
 
     % Initialize the output line with ID and coordinates
-    output_line = join(parts, ', ');
-    output_line = output_line{1};
+    csv_line = join(parts, ', ');
+    csv_line = csv_line{1};
 
+    node_line = strcat(join(string(coord_nat'), ' '), {' '}, ...
+        '1', {' '}, string(node_size), {' '}, ch_name);
+
+    % Get label from atlases
     for atlas = atlases
         atlas_path  = fullfile(pat.dir, 'mri', strcat(atlas{1}, '.nii'));
-        coord_val   = mm2val(coord_mm, atlas_path);
+        coord_val   = mm2val(coord_nat, atlas_path);
 
         for lookup_tbl_line = lookup_tbl'
             lookup_tbl_line_str = lookup_tbl_line{1};
             if startsWith(lookup_tbl_line_str, strcat(coord_val, " "))
                 line_parts = strsplit(lookup_tbl_line_str, ' ');
                 label = line_parts{2};
-                output_line = strcat(output_line, ", ", label);
+                csv_line = strcat(csv_line, ", ", label);
             end
         end
     end
 
     % Write new output line
-    fprintf(csv_fid, '%s\n', output_line);
+    fprintf(csv_fid, '%s\n', csv_line);
+    fprintf(node_fid, '%s\n', node_line);
 
     % Read the next line
     elec_line = fgetl(elec_fid);
@@ -67,7 +81,9 @@ end
 fclose(lookup_tbl_fid);
 fclose(elec_fid);
 fclose(csv_fid);
+fclose(node_fid);
 
 fprintf('Electrode location (native space) table saved at: %s\n', csv_path)
+fprintf('Electrode location (native space) node saved at: %s\n', node_path)
 
 end

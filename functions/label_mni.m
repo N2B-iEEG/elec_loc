@@ -66,22 +66,18 @@ while ischar(elec_line)
         node_size = 1;
     end
 
-    % Get channel name
-    csv_305_line = ch_name;
-    csv_152_line = ch_name;
-
     % Compute coordinate in MNI305 and MNI152 using two transformations
     coord_nat = str2double(parts(2:4));
     coord_305 = nat_to_305_mat * [coord_nat, 1]';
     coord_152 = mat_305_to_152 * [coord_305; 1];
 
     % Append MNI305 coordinates to output line
-    csv_305_line  = strcat(csv_305_line, ',', {' '}, join(string(coord_305'), ', '));
+    csv_305_line  = strcat(ch_name, ',', {' '}, join(string(coord_305'), ', '));
     node_305_line = strcat(join(string(coord_305'), ' '), {' '}, ...
         '1', {' '}, string(node_size), {' '}, ch_name);
 
     % Append MNI152 coordinates to output line
-    csv_152_line  = strcat(csv_152_line, ',', {' '}, join(string(coord_152'), ', '));
+    csv_152_line  = strcat(ch_name, ',', {' '}, join(string(coord_152'), ', '));
     node_152_line = strcat(join(string(coord_152'), ' '), {' '}, ...
         '1', {' '}, string(node_size), {' '}, ch_name);
 
