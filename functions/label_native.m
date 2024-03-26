@@ -12,8 +12,8 @@ iel_dir = fullfile(pat.dir, 'iel');
     'Select iElectrodes output txt');
 elec_path = fullfile(elec_dir, elec_fn);
 
-csv_path  = fullfile(iel_dir, strcat(pat.id, '_elec_native.csv'));
-node_path = fullfile(iel_dir, strcat(pat.id, '_elec_native.node'));
+csv_path  = fullfile(iel_dir, strcat('sub-', pat.id, '_space-ACPC_electrodes.csv'));
+node_path = fullfile(iel_dir, strcat('sub-', pat.id, '_space-ACPC_electrodes.node'));
 
 % List of atlases to read from
 atlases = {'aparc.a2009s+aseg', 'aparc.DKTatlas+aseg'};
@@ -24,7 +24,7 @@ csv_fid = fopen(csv_path, 'w');
 node_fid = fopen(node_path, 'w');
 
 % Write first line (header) of output file
-columns = [{'channel'}, {'x_native'}, {'y_native'}, {'z_native'}, atlases(:)'];
+columns = [{'name'}, {'x'}, {'y'}, {'z'}, {'size'}, atlases(:)'];
 hdr_txt = repmat('%s, ', 1, length(columns));
 hdr_txt = hdr_txt(1:end-2);
 fprintf(csv_fid, [hdr_txt '\n'], columns{:});
@@ -50,6 +50,7 @@ while ischar(elec_line)
     % Initialize the output line with ID and coordinates
     csv_line = join(parts, ', ');
     csv_line = csv_line{1};
+    csv_line = strcat(csv_line, ', 1');
 
     node_line = strcat(join(string(coord_nat'), ' '), {' '}, ...
         '1', {' '}, string(node_size), {' '}, ch_name);
