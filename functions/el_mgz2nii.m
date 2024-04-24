@@ -1,6 +1,6 @@
-function el_mgz2nii(config, pat)
+function el_mgz2nii(cfg, pat)
 
-bash_code = fs_setup_code(config);
+bash_code = fs_setup_code(cfg);
 pat_mri_dir = fullfile(pat.dir, 'mri');
 mgz = dir(fullfile(pat_mri_dir, '*.mgz'));
 

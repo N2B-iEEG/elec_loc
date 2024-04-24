@@ -41,13 +41,14 @@ else
     import_quest = questdlg( ...
         'Preprocessed scans already exist. Re-import?', ...
         'el_org_scans', ...
-        'Use existing scans', ...
+        'Load existing scans', ...
         'Re-import from scratch', ...
         'Use existing scans');
     if strcmp(import_quest, 'Re-import from scratch')
         import = true;
     else
         import = false;
+        have_t2 = exist(pat.t2.final, 'file');
     end
 end
 
@@ -62,9 +63,9 @@ if import
         'No', ...
         'Yes');
     if strcmp(have_t2_quest, 'Yes')
-        import_t2 = true;
+        have_t2 = true;
     else
-        import_t2 = false;
+        have_t2 = false;
     end
 
     % Import DICOM or NIFTI
@@ -84,7 +85,7 @@ if import
         
         pat.t1.raw = el_dcm2nii(pat, 'T1');
         pat.ct.raw = el_dcm2nii(pat, 'CT');
-        if import_t2
+        if have_t2
             pat.t2.raw = el_dcm2nii(pat, 'T2');
         end
 
@@ -108,7 +109,7 @@ if import
         pat.ct.raw = fullfile(ct_dir, ct_name);
 
         % T2
-        if import_t2
+        if have_t2
             [t2_name, t2_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
                 'Select pre-op T2 MRI');
             if isnumeric(t2_name)
@@ -164,7 +165,7 @@ if import
     end
 
     % T2 preprocessing
-    if import_t2
+    if have_t2
 
         fprintf('**********PROCESSING T2**********\n\n')
 
@@ -175,24 +176,9 @@ if import
 
     end
 
-    % Check results in nii_viewer
-    if import_t2
-
-        nii_viewer( ...
-            pat.t1.deface, ...
-            {pat.t2.deface, pat.ct.thres})
-
-    else
-
-        nii_viewer( ...
-            pat.t1.deface, ...
-            {pat.ct.thres})
-
-    end
-
     movefile(pat.t1.deface, pat.t1.final)
     movefile(pat.ct.thres, pat.ct.final)
-    if import_t2
+    if have_t2
         movefile(pat.t2.deface, pat.t2.final)
     end
 
@@ -200,9 +186,21 @@ if import
 
 end
 
+% Check results in nii_viewer
+if have_t2
+    nii_viewer( ...
+        pat.t1.final, ...
+        {pat.t2.final, pat.ct.final})
+else
+    nii_viewer( ...
+        pat.t1.final, ...
+        {pat.ct.final})
+end
+
 files = dir(fullfile(pat.dir_iel, '*.nii'));
 fprintf('Preprocessed files:\n')
 for f = files'
+    gzip(fullfile(pat.dir_iel, f.name))
     fprintf('\t%s\n', f.name)
 end
 

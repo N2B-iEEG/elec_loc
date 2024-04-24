@@ -1,4 +1,20 @@
-function merge_pial(filename1,filename2,filename3)
+function el_merge_mesh(pat)
+
+white_l = fullfile(pat.dir, 'surf', 'lh.white');
+white_r = fullfile(pat.dir, 'surf', 'rh.white');
+white_m = fullfile(pat.dir, 'iel', 'bil_white.nv');
+
+merge_mesh(white_l, white_r, white_m)
+
+pial_l = fullfile(pat.dir, 'surf', 'lh.pial');
+pial_r = fullfile(pat.dir, 'surf', 'rh.pial');
+pial_m = fullfile(pat.dir, 'iel', 'bil_pial.nv');
+
+merge_mesh(pial_l, pial_r, pial_m)
+
+end
+
+function merge_mesh(filename1,filename2,filename3)
 
 % Adapted from BrainNet_MergeMesh()
 % Written by Mingrui Xia
@@ -27,7 +43,8 @@ for i=1:surf.ntri
     fprintf(fid,'%d %d %d\n',surf.tri(i,1:3));
 end
 fclose(fid);
-msgbox('Mesh was successfully created!','Success','help');
+% msgbox('Mesh was successfully created!','Success','help');
+fprintf('Merged mesh successfully saved at %s\n', filename3)
 
 end
 
