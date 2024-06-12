@@ -6,7 +6,7 @@ mgz = dir(fullfile(pat_mri_dir, '*.mgz'));
 
 for i_mgz = 1:length(mgz)
 
-    if startsWith(mgz(i_mgz).name, {'aparc+aseg.mgz', 'aparc.2009+aseg', 'wmparc'})
+    if startsWith(mgz(i_mgz).name, {'aparc.DKTatlas+aseg', 'aparc.a2009s+aseg', 'wmparc'})
 
         i_mgz_path = fullfile(mgz(i_mgz).folder, mgz(i_mgz).name);
         i_nii_path = fullfile(mgz(i_mgz).folder, [mgz(i_mgz).name(1:end-3) 'nii']);

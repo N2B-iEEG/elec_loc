@@ -64,7 +64,7 @@ writetable(tbl_node, node_path, ...
 
 %% Visualize with BrainNet Viewer
 options = fullfile(cfg.dir_el, 'bnv_options.mat');
-surf    = fullfile(pat.dir_iel, 'bil_pial.nv');
+surf    = fullfile(pat.dir_iel, 'bil_white.nv');
 
 BrainNet_MapCfg(surf, node_path, options, gb_path);
 
