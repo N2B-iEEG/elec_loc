@@ -9,7 +9,6 @@ if ~exist(pat.dir, 'dir')
     mkdir(pat.dir)
 end
 
-pat.dir_iel = fullfile(pat.dir, 'iel');
 if ~exist(pat.dir_iel, 'dir')
     mkdir(pat.dir_iel)
 end
@@ -136,10 +135,8 @@ if import
         'overlaid on top of the original scan (grayscale).\n\n' ...
         'If the result seems satisfactory, click "Overwrite the source file".\n\n' ...
         'If not, click "Bad result & disp file name"']), ...
-        'T1 defacing', 'help');
-    msg.Units = 'normalized';
-    msg.Position = [0 0.35 0.4 0.3];
-    fontsize(msg, 12,"points")
+        'T1 defacing', ...
+        'help');
 
     el_deface(pat.t1.acpc, pat.t1.deface);
 

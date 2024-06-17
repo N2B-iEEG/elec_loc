@@ -24,14 +24,14 @@ y    = [chs.y]';
 z    = [chs.z]';
 coord_nat = [x, y, z];
 
-size = 2 * ones(length(name), 1); % Macro size : 2mm
-size(is_micro) = 1.5;
+ch_size = 2 * ones(length(name), 1); % Macro size : 2mm
+ch_size(is_micro) = 1.5;
 
 color = ones(length(name), 1);
 color(is_micro) = 2;
 
-tbl = table(name, x, y, z, size, is_micro);
-tbl_node = table(x, y, z, color, size, name);
+tbl = table(name, x, y, z, ch_size, is_micro);
+tbl_node = table(x, y, z, color, ch_size, name);
 
 % Get label from atlases
 for atlas = atlases
@@ -40,7 +40,7 @@ for atlas = atlases
     atlas_path = fullfile(pat.dir, 'mri', strcat(atlas, '.nii'));
 
     if ~exist(atlas_path, 'file')
-        error(['%s not found\nPlease check if' ...
+        error(['%s not found\nPlease check if ' ...
             'recon-all and mgz2nii were successfully run.'], ...
             atlas_path)
     end
