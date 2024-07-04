@@ -13,6 +13,14 @@ cfg.dir_bnv = fullfile(cfg.dir_el, 'external', 'BrainNet-Viewer');
 cfg.dir_bnv_templates = fullfile(cfg.dir_bnv, 'Data', 'SurfTemplate');
 addpath(cfg.dir_bnv)
 
+% Add warning for missing toolboxes
+if license('test', 'Signal_Toolbox') ~= 1
+    error('iElectrodes requires Signal Processing Toolbox')
+end
+if license('test', 'Statistics_Toolbox') ~= 1
+    error('iElectrodes requires Statistics Processing Toolbox')
+end
+
 % Check iElectrodes installation
 iel_info = dir(fullfile(cfg.dir_el, 'iElectrodes*'));
 if isempty(iel_info)
