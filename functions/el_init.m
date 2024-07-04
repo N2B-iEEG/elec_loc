@@ -1,18 +1,5 @@
 function [cfg, pat] = el_init(cfg, pat)
 
-pat.dir_iel = fullfile(pat.dir, 'iel');
-
-% Add path to external packages
-addpath(fullfile(cfg.dir_el, 'external/spm12'))
-addpath(fullfile(cfg.dir_el, 'external/spm12/toolbox/OldNorm/'))
-addpath(fullfile(cfg.dir_el, 'external/auto_acpc_reorient/'))
-addpath(genpath(fullfile(cfg.dir_el, 'external/dicm2nii')))
-
-% Add path to BrainNet Viewer
-cfg.dir_bnv = fullfile(cfg.dir_el, 'external', 'BrainNet-Viewer');
-cfg.dir_bnv_templates = fullfile(cfg.dir_bnv, 'Data', 'SurfTemplate');
-addpath(cfg.dir_bnv)
-
 % Add warning for missing toolboxes
 if license('test', 'Signal_Toolbox') ~= 1
     error('iElectrodes requires Signal Processing Toolbox')
@@ -33,7 +20,20 @@ end
 cfg.dir_iel = fullfile(cfg.dir_el, iel_info(1).name);
 addpath(genpath(cfg.dir_iel))
 
+% Add path to external packages
+addpath(fullfile(cfg.dir_el, 'external/spm12'))
+addpath(fullfile(cfg.dir_el, 'external/spm12/toolbox/OldNorm/'))
+addpath(fullfile(cfg.dir_el, 'external/auto_acpc_reorient/'))
+addpath(genpath(fullfile(cfg.dir_el, 'external/dicm2nii')))
+
+% Add path to BrainNet Viewer
+cfg.dir_bnv = fullfile(cfg.dir_el, 'external', 'BrainNet-Viewer');
+cfg.dir_bnv_templates = fullfile(cfg.dir_bnv, 'Data', 'SurfTemplate');
+addpath(cfg.dir_bnv)
+
 % Sanity check if FreeSurfer directory is valid
 if isunix
     fs_sanity_check(cfg)
 end
+
+pat.dir_iel = fullfile(pat.dir, 'iel');
