@@ -6,8 +6,8 @@ white_m = fullfile(pat.dir, 'iel', 'bil_white.nv');
 
 merge_mesh(white_l, white_r, white_m)
 
-pial_l = fullfile(pat.dir, 'surf', 'lh.pial');
-pial_r = fullfile(pat.dir, 'surf', 'rh.pial');
+pial_l = fullfile(pat.dir, 'surf', 'lh.pial.T1');
+pial_r = fullfile(pat.dir, 'surf', 'rh.pial.T1');
 pial_m = fullfile(pat.dir, 'iel', 'bil_pial.nv');
 
 merge_mesh(pial_l, pial_r, pial_m)
