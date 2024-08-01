@@ -23,7 +23,7 @@ for scan = [pat.t1, pat.ct]
         mm_coords = [e.x; e.y; e.z; 1];
 
         voxel_coords = scan.mat \ mm_coords;
-        voxel_coords = round(voxel_coords(1:3)) + 1; % NIFTI uses zero indexing
+        voxel_coords = round(voxel_coords(1:3));
 
         x_slice = squeeze(img(voxel_coords(1), :, :));
         y_slice = squeeze(img(:, voxel_coords(2), :));
