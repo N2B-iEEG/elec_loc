@@ -1,4 +1,4 @@
-function el_elec_native(cfg, pat, elec)
+function el_elec_native(cfg, pat)
 
 % Load FreeSurfer value-to-label lookup table
 fs_lut_path = fullfile(cfg.dir_iel, 'priv', 'FreeSurferColorLUT.mat');
@@ -6,38 +6,50 @@ load(fs_lut_path, 'values', 'labels')
 
 % Define paths to output files
 prefix = strcat('sub-', pat.id, '_space-ACPC_electrodes');
-csv_path  = fullfile(pat.dir_iel, strcat(prefix, '.csv'));
-tsv_path  = fullfile(pat.dir_iel, strcat(prefix, '.tsv'));
-node_path = fullfile(pat.dir_iel, strcat(prefix, '.node'));
-gb_path   = fullfile(pat.dir_iel, strcat(prefix, '.jpg'));
+csv_path  = fullfile(pat.dir.el, strcat(prefix, '.csv'));
+tsv_path  = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.tsv'));
+node_path = fullfile(pat.dir.el, strcat(prefix, '.node'));
+
+prefix = strcat('sub-', pat.id, '_acq-ACPCrender_photo');
+gb_path   = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.jpg'));
 
 % List of atlases to read from
 atlases = {'aparc.a2009s+aseg', 'aparc.DKTatlas+aseg', 'wmparc'};
 
 % Get all info from iElectrodes
-chs = [elec.ch];
-is_micro = [chs.is_micro]';
+elec = [pat.elec.ch];
+is_micro = [elec.is_micro]';
+n_elec = length(elec);
 
-name = {chs.name}';
-x    = [chs.x]';
-y    = [chs.y]';
-z    = [chs.z]';
-coord_nat = [x, y, z];
+name  = {elec.name}';
+x     = [elec.x]';
+y     = [elec.y]';
+z     = [elec.z]';
+group = {elec.group}';
+type  = {elec.type}';
 
-ch_size = 2 * ones(length(name), 1); % Macro size : 2mm
-ch_size(is_micro) = 1.5;
+% Unknown columns required by BIDS
+[size, material, manufacturer, hemisphere, impedance, dimension] = ...
+    deal(repmat("n/a", n_elec, 1));
+
+node_size = 2 * ones(length(name), 1); % Macro size : 2mm
+node_size(is_micro) = 1.5;
 
 color = ones(length(name), 1);
 color(is_micro) = 2;
 
-tbl = table(name, x, y, z, ch_size, is_micro);
-tbl_node = table(x, y, z, color, ch_size, name);
+tbl = table( ...
+    name, x, y, z, size, material, manufacturer, group, hemisphere, ...
+    type, impedance, dimension);
+tbl_node = table(x, y, z, color, node_size, name);
+
+coord_nat = [x, y, z];
 
 % Get label from atlases
 for atlas = atlases
 
     atlas = string(atlas);
-    atlas_path = fullfile(pat.dir, 'mri', strcat(atlas, '.nii'));
+    atlas_path = fullfile(pat.dir.fs_mri, strcat(atlas, '.nii'));
 
     if ~exist(atlas_path, 'file')
         error(['%s not found\nPlease check if ' ...
@@ -64,7 +76,7 @@ writetable(tbl_node, node_path, ...
 
 %% Visualize with BrainNet Viewer
 options = fullfile(cfg.dir_el, 'bnv_options.mat');
-surf    = fullfile(pat.dir_iel, 'bil_white.nv');
+surf    = fullfile(pat.dir.el, 'bil_white.nv');
 
 BrainNet_MapCfg(surf, node_path, options, gb_path);
 

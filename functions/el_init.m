@@ -5,7 +5,7 @@ if license('test', 'Signal_Toolbox') ~= 1
     error('iElectrodes requires Signal Processing Toolbox')
 end
 if license('test', 'Statistics_Toolbox') ~= 1
-    error('iElectrodes requires Statistics Processing Toolbox')
+    error('iElectrodes requires Statistics Toolbox')
 end
 
 % Check iElectrodes installation
@@ -36,4 +36,16 @@ if isunix
     fs_sanity_check(cfg)
 end
 
-pat.dir_iel = fullfile(pat.dir, 'iel');
+pat.dir.fs = fullfile(cfg.dir_fs_subjects, pat.id);
+pat.dir.fs_mri = fullfile(pat.dir.fs, 'mri');
+pat.dir.fs_surf = fullfile(pat.dir.fs, 'surf');
+pat.dir.el = fullfile(pat.dir.fs, 'elec_loc');
+pat.dir.el_bids = fullfile(pat.dir.el, 'BIDS_outputs');
+pat.dir.el_bids_anat = fullfile(pat.dir.el_bids, 'anat');
+pat.dir.el_bids_ieeg = fullfile(pat.dir.el_bids, 'ieeg');
+
+for field = fieldnames(pat.dir)'
+    if ~exist(pat.dir.(char(field)), 'dir')
+        mkdir(pat.dir.(char(field)))
+    end
+end

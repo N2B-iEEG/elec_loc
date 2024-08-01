@@ -32,9 +32,13 @@ for i = 1:length(elec)
         ch.x = micro_xyz(1);
         ch.y = micro_xyz(2);
         ch.z = micro_xyz(3);
+        ch.group = ch.name;
+        ch.type = 'microwire';
         ch.is_micro = true;
 
         elec(i).ch(end+1) = ch;
+        fprintf('\t%s [%.2f, %.2f, %.2f]\n', ...
+            ch.name, ch.x, ch.y, ch.z)
     end
 end
 

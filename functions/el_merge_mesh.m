@@ -1,14 +1,14 @@
 function el_merge_mesh(pat)
 
-white_l = fullfile(pat.dir, 'surf', 'lh.white');
-white_r = fullfile(pat.dir, 'surf', 'rh.white');
-white_m = fullfile(pat.dir, 'iel', 'bil_white.nv');
+white_l = fullfile(pat.dir.fs_surf, 'lh.white');
+white_r = fullfile(pat.dir.fs_surf, 'rh.white');
+white_m = fullfile(pat.dir.el, 'bil_white.nv');
 
 merge_mesh(white_l, white_r, white_m)
 
-pial_l = fullfile(pat.dir, 'surf', 'lh.pial.T1');
-pial_r = fullfile(pat.dir, 'surf', 'rh.pial.T1');
-pial_m = fullfile(pat.dir, 'iel', 'bil_pial.nv');
+pial_l = fullfile(pat.dir.fs_surf, 'lh.pial.T1');
+pial_r = fullfile(pat.dir.fs_surf, 'rh.pial.T1');
+pial_m = fullfile(pat.dir.el, 'bil_pial.nv');
 
 merge_mesh(pial_l, pial_r, pial_m)
 
@@ -44,7 +44,7 @@ for i=1:surf.ntri
 end
 fclose(fid);
 % msgbox('Mesh was successfully created!','Success','help');
-fprintf('Merged mesh successfully saved at %s\n', filename3)
+fprintf('Merged mesh successfully saved at\n\t%s\n', filename3)
 
 end
 
