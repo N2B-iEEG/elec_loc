@@ -66,4 +66,3 @@ for scan = [pat.t1, pat.ct]
 
     end
 end
-close(fig)
