@@ -4,12 +4,12 @@ function el_elec_mni152(cfg, pat)
 nat_to_152 = nii_coreg('mni_T1', pat.t1.image);
 
 % Define paths to output files
-prefix = strcat('sub-', pat.id, '_space-MNI152_electrodes');
+prefix = strcat('sub-', pat.id, '_space-MNI152Lin_electrodes');
 csv_path  = fullfile(pat.dir.el, strcat(prefix, '.csv'));
 tsv_path  = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.tsv'));
 node_path = fullfile(pat.dir.el, strcat(prefix, '.node'));
 
-prefix = strcat('sub-', pat.id, '_acq-MNI152render_photo');
+prefix = strcat('sub-', pat.id, '_acq-MNI152Render_photo');
 gb_path   = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.jpg'));
 
 % Get all info from iElectrodes

@@ -10,7 +10,7 @@ csv_path  = fullfile(pat.dir.el, strcat(prefix, '.csv'));
 tsv_path  = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.tsv'));
 node_path = fullfile(pat.dir.el, strcat(prefix, '.node'));
 
-prefix = strcat('sub-', pat.id, '_acq-ACPCrender_photo');
+prefix = strcat('sub-', pat.id, '_acq-ACPCRender_photo');
 gb_path   = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.jpg'));
 
 % List of atlases to read from
