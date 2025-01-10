@@ -9,6 +9,7 @@ prefix = strcat('sub-', pat.id, '_space-ACPC_electrodes');
 csv_path  = fullfile(pat.dir.el, strcat(prefix, '.csv'));
 tsv_path  = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.tsv'));
 node_path = fullfile(pat.dir.el, strcat(prefix, '.node'));
+reref_path = fullfile(pat.dir.el, strcat(prefix, '_bipolar-reref.csv'));
 
 prefix = strcat('sub-', pat.id, '_acq-ACPCRender_photo');
 gb_path   = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.jpg'));
@@ -66,6 +67,12 @@ for atlas = atlases
 
 end
 
+% Separate virtual electrodes table
+is_bipolar = strcmp(type,'bipolar');
+tbl_reref = tbl(is_bipolar,:);
+tbl(is_bipolar,:) = []; % Drop virtual electrodes from tables
+tbl_node(is_bipolar,:) = []; 
+
 %% Save
 writetable(tbl, csv_path)
 writetable(tbl, tsv_path, ...
@@ -73,6 +80,9 @@ writetable(tbl, tsv_path, ...
 writetable(tbl_node, node_path, ...
     'FileType', 'text', 'Delimiter', 'space', ...
     'WriteVariableNames', false)
+if ~isempty(tbl_reref)
+    writetable(tbl_reref, reref_path)
+end
 
 %% Visualize with BrainNet Viewer
 options = fullfile(cfg.dir_el, 'bnv_options.mat');

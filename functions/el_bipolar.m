@@ -33,7 +33,7 @@ for i = 1:length(elec)
 
     group = repmat(strcat(group_name, '_bipolar'), length(depth_loc)-1, 1);
     type = repmat('bipolar', length(depth_loc)-1, 1);
-    is_micro = zeros(length(depth_loc)-1, 1);
+    is_micro = logical(zeros(length(depth_loc)-1, 1));
 
     all_cell = [name_bipolar;...
                 x_bipolar;...
