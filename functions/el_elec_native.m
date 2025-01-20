@@ -49,7 +49,7 @@ coord_nat = [x, y, z];
 % Get label from atlases
 for atlas = atlases
 
-    atlas = string(atlas);
+    atlas_name = string(atlas);
     atlas_path = fullfile(pat.dir.fs_mri, strcat(atlas, '.nii'));
 
     if ~exist(atlas_path, 'file')
@@ -63,7 +63,7 @@ for atlas = atlases
     [~, label_idx] = ismember(coord_val, values);
     ch_labels = labels(label_idx);
 
-    tbl.(atlas) = ch_labels;
+    tbl.(atlas_name) = ch_labels;
 
 end
 
