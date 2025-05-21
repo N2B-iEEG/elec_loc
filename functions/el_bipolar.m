@@ -11,6 +11,15 @@ for i = 1:length(elec)
     % Generate the names of bipolar electrodes
     names = {elec(i).ch.name};
     elec_idx = regexp(names, '(\d+)$', 'tokens');
+    % Check that no electrode number is larger than 10
+    if str2double(elec_idx{1}{1}{1}) > 10
+        for j = 1:length(elec_idx)
+            if isempty(elec_idx{j})
+                continue
+            end
+            elec_idx{j}{1}{1} = elec_idx{j}{1}{1}(2:end);
+        end
+    end
 
     name_bipolar = {};
     for j = 1:(length(depth_loc)-1)
