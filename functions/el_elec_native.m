@@ -2,7 +2,10 @@ function el_elec_native(cfg, pat)
 
 % Load FreeSurfer value-to-label lookup table
 fs_lut_path = fullfile(cfg.dir_iel, 'priv', 'FreeSurferColorLUT.mat');
-load(fs_lut_path, 'values', 'labels')
+%load(fs_lut_path, 'values', 'labels')
+temp = load(fs_lut_path);
+values = table2array(temp.fs_labels(:,'values'));
+labels = temp.fs_labels{:,'labels'};
 
 % Define paths to output files
 prefix = strcat('sub-', pat.id, '_space-ACPC_electrodes');
