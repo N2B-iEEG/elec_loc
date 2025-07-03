@@ -1,22 +1,12 @@
-function pat = el_import_scans(pat)
+function pat = el_import_scans(pat, cfg)
+
+mni_template_path = fullfile(cfg.dir_el, 'mni_icbm152_t1_tal_nlin_sym_09c.nii');
 
 %% Scans
 sub_name = sprintf('sub-%s_', pat.id);
 
-pat_t1.cent   = fullfile(pat.dir.el, ['temp_' sub_name, 'T1w_cent.nii']);
-pat_t1.acpc   = fullfile(pat.dir.el, ['temp_' sub_name, 'T1w_cent_acpc.nii']);
-pat_t1.deface = fullfile(pat.dir.el, ['temp_' sub_name, 'T1w_cent_acpc_deface.nii']);
 pat.t1.image  = fullfile(pat.dir.el, [sub_name, 'acq-preop_T1w.nii']);
-
-pat_ct.cent   = fullfile(pat.dir.el, ['temp_' sub_name, 'CT_cent.nii']);
-pat_ct.coreg  = fullfile(pat.dir.el, ['temp_' sub_name, 'CT_cent_coreg.nii']);
-pat_ct.deface = fullfile(pat.dir.el, ['temp_' sub_name, 'CT_cent_coreg_deface.nii']);
-pat_ct.thres  = fullfile(pat.dir.el, ['temp_' sub_name, 'CT_cent_coreg_deface_thres.nii']);
 pat.ct.image  = fullfile(pat.dir.el, [sub_name, 'acq-postop_CT.nii']);
-
-pat_t2.cent   = fullfile(pat.dir.el, ['temp_' sub_name, 'T2w_cent.nii']);
-pat_t2.coreg  = fullfile(pat.dir.el, ['temp_' sub_name, 'T2w_cent_coreg.nii']);
-pat_t2.deface = fullfile(pat.dir.el, ['temp_' sub_name, 'T2w_cent_coreg_deface.nii']);
 pat.t2.image  = fullfile(pat.dir.el, [sub_name, 'acq-preop_T2w.nii']);
 
 % Check if final files exist
@@ -70,10 +60,10 @@ if import
 
     if dcm
 
-        pat_t1.raw = el_dcm2nii(pat, 'T1');
-        pat_ct.raw = el_dcm2nii(pat, 'CT');
+        pat.t1.raw = el_dcm2nii(pat, 'T1');
+        pat.ct.raw = el_dcm2nii(pat, 'CT');
         if have_t2
-            pat_t2.raw = el_dcm2nii(pat, 'T2');
+            pat.t2.raw = el_dcm2nii(pat, 'T2');
         end
 
     else
@@ -84,7 +74,7 @@ if import
             error('No file selected')
         end
         cd(t1_dir)
-        pat_t1.raw = fullfile(t1_dir, t1_name);
+        pat.t1.raw = fullfile(t1_dir, t1_name);
 
         % CT
         [ct_name, ct_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
@@ -93,7 +83,7 @@ if import
             error('No file selected')
         end
         cd(ct_dir)
-        pat_ct.raw = fullfile(ct_dir, ct_name);
+        pat.ct.raw = fullfile(ct_dir, ct_name);
 
         % T2
         if have_t2
@@ -103,7 +93,7 @@ if import
                 error('No file selected')
             end
             cd(t2_dir)
-            pat_t2.raw = fullfile(t2_dir, t2_name);
+            pat.t2.raw = fullfile(t2_dir, t2_name);
         end
 
     end
@@ -113,32 +103,22 @@ if import
 
     fprintf('**********PROCESSING T1**********\n\n')
 
-    % Center, align to ACPC, and deface
-    el_center(pat_t1.raw, pat_t1.cent, false);
-    el_auto_acpc(pat_t1.cent, pat_t1.acpc);
-
-    % Show deface instruction message box
-    msg = msgbox(sprintf(['Defacing of T1 is now in progress.\n\n' ...
-        'Once the computation is done, you will see the defaced (red) T1 scan ' ...
-        'overlaid on top of the original scan (grayscale).\n\n' ...
-        'If the result seems satisfactory, click "Overwrite the source file".\n\n' ...
-        'If not, click "Bad result & disp file name"']), ...
-        'T1 defacing', ...
-        'help');
-
-    el_deface(pat_t1.acpc, pat_t1.deface);
+    % Center, align to MNI, and deface
+    el_center(pat.t1.raw, pat.t1.image, false);
+    el_coreg(mni_template_path, pat.t1.image, pat.t1.image);
+    el_deface(pat.t1.image, pat.t1.image);
 
     % CT preprocessing
 
     fprintf('**********PROCESSING CT**********\n\n')
 
     % Center, coregister, mask to deface
-    el_center(pat_ct.raw, pat_ct.cent, false);
-    el_coreg(pat_t1.acpc, pat_ct.cent, pat_ct.coreg);
-    el_mask(pat_t1.deface, pat_ct.coreg, pat_ct.deface);
+    el_center(pat.ct.raw, pat.ct.image, false);
+    el_coreg(pat.t1.image, pat.ct.image, pat.ct.image);
+    el_mask(pat.t1.image, pat.ct.image, pat.ct.image);
 
     % Determine optimal CT threshold
-    nii_viewer(pat_ct.deface)
+    nii_viewer(pat.ct.image)
     opts.WindowStyle = 'normal';
     ct_thres = NaN;
     while isnan(ct_thres)
@@ -150,7 +130,7 @@ if import
 
     % Threshold CT
     if ~isempty(ct_thres)
-        el_thres(pat_ct.deface, pat_ct.thres, sprintf('i1.*(i1>%d)', ct_thres))
+        el_thres(pat.ct.image, pat.ct.image, sprintf('i1.*(i1>%d)', ct_thres))
     end
 
     % T2 preprocessing
@@ -159,22 +139,17 @@ if import
         fprintf('**********PROCESSING T2**********\n\n')
 
         % Center, coregister, mask to deface
-        el_center(pat_t2.raw, pat_t2.cent, false);
-        el_coreg(pat_t1.acpc, pat_t2.cent, pat_t2.coreg);
-        el_mask(pat_t1.deface, pat_t2.coreg, pat_t2.deface);
+        el_center(pat.t2.raw, pat.t2.image, false);
+        el_coreg(pat.t1.image, pat.t2.image, pat.t2.image);
+        el_mask(pat.t1.image, pat.t2.image, pat.t2.image);
 
     end
 
-    movefile(pat_t1.deface, pat.t1.image)
     gzip(pat.t1.image, pat.dir.el_bids_anat)
-    movefile(pat_ct.thres, pat.ct.image)
     gzip(pat.ct.image, pat.dir.el_bids_anat)
     if have_t2
-        movefile(pat_t2.deface, pat.t2.image)
         gzip(pat.t2.image, pat.dir.el_bids_anat)
     end
-
-    delete(fullfile(pat.dir.el, 'temp*.nii'))
 
 end
 

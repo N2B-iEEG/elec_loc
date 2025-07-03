@@ -1,12 +1,12 @@
-function el_thres(input_path, output_path, expr)
+function el_thres(in_path, out_path, expr)
 
-fprintf('>>>>>Thresholding %s according to %s\n', ...
-    input_path, expr)
+fprintf('>> el_thres\n\tINPUT: %s\n\tOUTPUT: %s\n\tEXPRESSION: %s\n', ...
+    in_path, out_path, expr)
 
-Vi = spm_vol(char(input_path));
+Vi = spm_vol(char(in_path));
 
-spm_imcalc(Vi, char(output_path), expr)
+spm_imcalc(Vi, char(out_path), expr);
 
-fprintf('\n>>>>>Thresholded scan saved at %s\n\n', output_path)
+fprintf('Done\n')
 
 end

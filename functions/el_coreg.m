@@ -1,11 +1,14 @@
-function el_coreg(t1_path, other_path, output_path)
+function el_coreg(ref_path, source_path, out_path)
+
+fprintf('>> el_coreg\n\tREFERENCE: %s\n\tSOURCE: %s\n\tOUTPUT: %s\n', ...
+    ref_path, source_path, out_path)
 
 fprintf('>>>>>Coregistering %s to %s\n', ...
-    other_path, t1_path)
+    source_path, ref_path)
 
 % Load scans
-t1_spm = spm_vol(char(t1_path));
-other_spm = spm_vol(char(other_path));
+t1_spm = spm_vol(char(ref_path));
+other_spm = spm_vol(char(source_path));
 other_img = spm_read_vols(other_spm);
 
 % Estimate the transformation matrix
@@ -13,9 +16,9 @@ x = spm_coreg(t1_spm, other_spm);
 
 % Update the transformation matrix in the other_spm structure
 other_spm.mat = spm_matrix(x) \ other_spm.mat;
-other_spm.fname = char(output_path);
+other_spm.fname = char(out_path);
 spm_write_vol(other_spm, other_img);
 
-fprintf('\n>>>>>Coregistered scan saved at %s\n\n', output_path)
+fprintf('Done\n')
 
 end

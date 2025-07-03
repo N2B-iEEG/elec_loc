@@ -1,10 +1,5 @@
 function el_fs_hpc_amy_seg(cfg, pat, seg_option)
 
-if strcmp(seg_option, 'None')
-    disp('Not segmenting hippocampal & amygdala subfields')
-    return
-end
-
 bash_code = fs_setup_code(cfg);
 
 if strcmp(seg_option, 'T1')
