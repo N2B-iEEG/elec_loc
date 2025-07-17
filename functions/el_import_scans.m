@@ -32,19 +32,6 @@ end
 % Import mode
 if import
 
-    % Ask whether to import T2
-    have_t2_quest = questdlg( ...
-        'Import T2 scan?', ...
-        'Import T2', ...
-        'Yes', ...
-        'No', ...
-        'Yes');
-    if strcmp(have_t2_quest, 'Yes')
-        have_t2 = true;
-    else
-        have_t2 = false;
-    end
-
     % Import DICOM or NIFTI
     dcm_nii_quest = questdlg( ...
         'What type of files to import?', ...
@@ -62,6 +49,7 @@ if import
 
         pat.t1.raw = el_dcm2nii(pat, 'T1');
         pat.ct.raw = el_dcm2nii(pat, 'CT');
+        have_t2 = get_t2();
         if have_t2
             pat.t2.raw = el_dcm2nii(pat, 'T2');
         end
@@ -86,6 +74,7 @@ if import
         pat.ct.raw = fullfile(ct_dir, ct_name);
 
         % T2
+        have_t2 = get_t2();
         if have_t2
             [t2_name, t2_dir] = uigetfile({'*.nii; *.nii.gz; *.mgz'}, ...
                 'Select pre-op T2 MRI');
@@ -167,4 +156,19 @@ else
         {pat.ct.image})
 end
 
+end
+
+function have_t2 = get_t2()
+    % Ask whether to import T2
+    have_t2_quest = questdlg( ...
+        'Import T2 scan?', ...
+        'Import T2', ...
+        'Yes', ...
+        'No', ...
+        'Yes');
+    if strcmp(have_t2_quest, 'Yes')
+        have_t2 = true;
+    else
+        have_t2 = false;
+    end
 end
