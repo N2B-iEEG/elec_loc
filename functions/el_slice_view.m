@@ -5,10 +5,11 @@ if ~exist(dir_slice, 'dir')
     mkdir(dir_slice)
 end
 
-elec = [pat.elec.ch];
+chs = [pat.elec.ch];
 
 pat.t1.modality = 'T1w';
 pat.ct.modality = 'CT';
+
 fig = figure('Units', 'normalized', 'Position', [0.1, 0.1, 0.8, 0.8]);
 for scan = [pat.t1, pat.ct]
 
@@ -18,15 +19,14 @@ for scan = [pat.t1, pat.ct]
         max(img, [], "all"), ...
         ];
     
-    for e = elec
-        mm_coords = [e.x; e.y; e.z; 1];
+    for c = chs
+        pos_mm = [c.x; c.y; c.z; 1];
+        pos_vox = scan.mat \ pos_mm;
+        pos_vox = round(pos_vox(1:3));
 
-        voxel_coords = scan.mat \ mm_coords;
-        voxel_coords = round(voxel_coords(1:3));
-
-        x_slice = squeeze(img(voxel_coords(1), :, :));
-        y_slice = squeeze(img(:, voxel_coords(2), :));
-        z_slice = squeeze(img(:, :, voxel_coords(3)));
+        x_slice = squeeze(img(pos_vox(1), :, :));
+        y_slice = squeeze(img(:, pos_vox(2), :));
+        z_slice = squeeze(img(:, :, pos_vox(3)));
 
         integrated = [...
             zeros(size(x_slice, 1), size(z_slice, 2)), x_slice;
@@ -36,18 +36,20 @@ for scan = [pat.t1, pat.ct]
         hold on
         imagesc(rot90(integrated, -1), CLIM);
         xline([ ...
-            size(img, 1) - voxel_coords(1), ...
-            size(img, 1) + size(img, 2) - voxel_coords(2), ...
+            size(img, 1) - pos_vox(1), ... % On coronal and horizontal planes
+            size(img, 1) + size(img, 2) - pos_vox(2), ... % On sagittal plane
             ], ...
             ':', 'Color', 'c', 'LineWidth', 0.5)
         yline([ ...
-            voxel_coords(2), ...
-            voxel_coords(3) + size(img, 2), ...
+            pos_vox(2), ... % On horizontal plane
+            pos_vox(3) + size(img, 2), ... % On coronal and sagittal planes
             ], ':', 'Color', 'c', 'LineWidth', 0.5)
         text(size(img, 1), size(img, 2), ...
-            e.name, ...
+            c.name, ...
             'FontSize', 15, 'Color', [.7 .7 .7], ...
-            "HorizontalAlignment", "left", VerticalAlignment="top")
+            "Interpreter", "none", ...
+            "HorizontalAlignment", "left", VerticalAlignment="top" ...
+            )
         xlim([1, size(integrated, 1)]);
         ylim([1, size(integrated, 2)]);
         xticks([]);
@@ -58,7 +60,7 @@ for scan = [pat.t1, pat.ct]
         % Export figure
         exportgraphics(fig, ...
             fullfile(dir_slice, sprintf('sub-%s_%s_%s.jpg', ...
-            pat.id, e.name, scan.modality)), ...
+            pat.id, c.name, scan.modality)), ...
             "Resolution", 300, ...
             'Colorspace', 'gray')
         cla

@@ -1,11 +1,7 @@
 function el_elec_native(cfg, pat)
 
-% Load FreeSurfer value-to-label lookup table
-fs_lut_path = fullfile(cfg.dir_iel, 'priv', 'FreeSurferColorLUT.mat');
-%load(fs_lut_path, 'values', 'labels')
-temp = load(fs_lut_path);
-values = table2array(temp.fs_labels(:,'values'));
-labels = temp.fs_labels{:,'labels'};
+% Lookup table (updated)
+fs_lut_path = fullfile(cfg.dir_el, 'FreeSurferColorLUT.mat');
 
 % Define paths to output files
 prefix = strcat('sub-', pat.id, '_space-ACPC_electrodes');
@@ -18,7 +14,12 @@ prefix = strcat('sub-', pat.id, '_acq-ACPCRender_photo');
 gb_path   = fullfile(pat.dir.el_bids_ieeg, strcat(prefix, '.jpg'));
 
 % List of atlases to read from
-atlases = {'aparc.a2009s+aseg', 'aparc.DKTatlas+aseg', 'wmparc'};
+atlases = {
+    'aparc.a2009s+aseg', 'aparc.DKTatlas+aseg', 'wmparc', ...
+    'lh.hippoAmygLabels-T1.v22', 'rh.hippoAmygLabels-T1.v22', ...
+    'lh.hippoAmygLabels-T1-T2.v22', 'rh.hippoAmygLabels-T1-T2.v22', ...
+    'ThalamicNuclei.v13.T1', ...
+    };
 
 % Get all info from iElectrodes
 elec = [pat.elec.ch];
@@ -53,7 +54,7 @@ coord_nat = [x, y, z];
 for atlas = atlases
 
     atlas_name = string(atlas);
-    atlas_path = fullfile(pat.dir.fs_mri, strcat(atlas, '.nii'));
+    atlas_path = char(fullfile(pat.dir.fs_mri, strcat(atlas, '.nii')));
 
     if ~exist(atlas_path, 'file')
         error(['%s not found\nPlease check if ' ...
@@ -61,12 +62,11 @@ for atlas = atlases
             atlas_path)
     end
 
-    coord_val = int16(mm2val(coord_nat, atlas_path));
+    [aLabel, ~, ~] = el_anatomicLabelFS( ...
+        coord_nat, atlas_path, fs_lut_path, 0 ...
+        );
 
-    [~, label_idx] = ismember(coord_val, values);
-    ch_labels = labels(label_idx);
-
-    tbl.(atlas_name) = ch_labels;
+    tbl.(atlas_name) = aLabel';
 
 end
 
@@ -91,7 +91,8 @@ end
 options = fullfile(cfg.dir_el, 'bnv_options.mat');
 surf    = fullfile(pat.dir.el, 'bil_white.nv');
 
-BrainNet_MapCfg(surf, node_path, options, gb_path);
+H = BrainNet_MapCfg(surf, node_path, options, gb_path);
+close(H)
 
 %% Display
 fprintf(['Electrode location (native ACPC space) saved:\n' ...
@@ -100,5 +101,3 @@ fprintf(['Electrode location (native ACPC space) saved:\n' ...
     '\t BrainNet node: %s\n' ...
     '\t Glass brain:   %s\n'], ...
     csv_path, tsv_path, node_path, gb_path)
-
-end

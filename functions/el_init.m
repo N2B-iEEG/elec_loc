@@ -23,7 +23,6 @@ addpath(genpath(cfg.dir_iel))
 % Add path to external packages
 addpath(fullfile(cfg.dir_el, 'external/spm12'))
 addpath(fullfile(cfg.dir_el, 'external/spm12/toolbox/OldNorm/'))
-addpath(fullfile(cfg.dir_el, 'external/auto_acpc_reorient/'))
 addpath(genpath(fullfile(cfg.dir_el, 'external/dicm2nii')))
 
 % Add path to BrainNet Viewer
