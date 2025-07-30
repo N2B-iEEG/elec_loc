@@ -1,6 +1,6 @@
 function pat = el_import_scans(pat, cfg)
 
-mni_template_path = fullfile(cfg.dir_el, 'mni_icbm152_t1_tal_nlin_sym_09c.nii');
+mni_template_path = fullfile(cfg.dir_el, 'icbm_avg_152_t1_tal_lin.nii');
 
 %% Scans
 sub_name = sprintf('sub-%s_', pat.id);

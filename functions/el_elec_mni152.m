@@ -1,7 +1,9 @@
 function el_elec_mni152(cfg, pat)
 
 % Estimate native-to-MNI152 transformation matrix
-nat_to_152 = nii_coreg('mni_T1', pat.t1.image);
+pat.t1.image = fullfile(pat.dir.el, sprintf('sub-%s_acq-preop_T1w.nii', pat.id));
+mni_template_path = fullfile(cfg.dir_el, 'icbm_avg_152_t1_tal_lin.nii');
+trans_matrix = nii_coreg(mni_template_path, pat.t1.image);
 
 % Define paths to output files
 prefix = strcat('sub-', pat.id, '_space-MNI152Lin_electrodes');
@@ -18,13 +20,13 @@ elec = [pat.elec.ch];
 is_micro = [elec.is_micro]';
 n_elec = length(elec);
 
-coord_nat = [[elec.x]', [elec.y]', [elec.z]', ones(n_elec, 1)];
-coord_152 = nat_to_152 * coord_nat';
+pos_nat = [[elec.x]', [elec.y]', [elec.z]', ones(n_elec, 1)];
+pos_152 = trans_matrix * pos_nat';
 
 name = {elec.name}';
-x = coord_152(1,:)';
-y = coord_152(2,:)';
-z = coord_152(3,:)';
+x = pos_152(1,:)';
+y = pos_152(2,:)';
+z = pos_152(3,:)';
 group = {elec.group}';
 type  = {elec.type}';
 
@@ -64,7 +66,8 @@ end
 options = fullfile(cfg.dir_el, 'bnv_options.mat');
 surf    = fullfile(cfg.dir_bnv_templates, 'BrainMesh_ICBM152.nv');
 
-BrainNet_MapCfg(surf, node_path, options, gb_path);
+H = BrainNet_MapCfg(surf, node_path, options, gb_path);
+close(H)
 
 %% Display
 fprintf(['Electrode location (MNI152 space) saved:\n' ...
