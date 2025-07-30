@@ -6,7 +6,6 @@ if ~exist(dir_slice, 'dir')
 end
 
 elec = [pat.elec.ch];
-elec_radius = 10;
 
 pat.t1.modality = 'T1w';
 pat.ct.modality = 'CT';
@@ -63,6 +62,6 @@ for scan = [pat.t1, pat.ct]
             "Resolution", 300, ...
             'Colorspace', 'gray')
         cla
-
     end
 end
+close(fig)
