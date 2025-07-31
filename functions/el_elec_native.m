@@ -37,37 +37,42 @@ type  = {elec.type}';
 [size, material, manufacturer, hemisphere, impedance, dimension] = ...
     deal(repmat("n/a", n_elec, 1));
 
-node_size = 2 * ones(length(name), 1); % Macro size : 2mm
+% Differentiate macro and micro by size and color
+node_size = 2 * ones(length(name), 1);
 node_size(is_micro) = 1.5;
-
 color = ones(length(name), 1);
 color(is_micro) = 2;
 
+% Construct table
 tbl = table( ...
     name, x, y, z, size, material, manufacturer, group, hemisphere, ...
     type, impedance, dimension);
 tbl_node = table(x, y, z, color, node_size, name);
 
-coord_nat = [x, y, z];
+pos_nat = [x, y, z];
 
 % Get label from atlases
+n_atlas = 0;
 for atlas = atlases
 
     atlas_name = string(atlas);
     atlas_path = char(fullfile(pat.dir.fs_mri, strcat(atlas, '.nii')));
 
-    if ~exist(atlas_path, 'file')
-        error(['%s not found\nPlease check if ' ...
-            'recon-all and mgz2nii were successfully run.'], ...
-            atlas_path)
+    if exist(atlas_path, 'file')
+        fprintf("Getting labels from atlas %s\n", atlas_name)
+        n_atlas = n_atlas + 1;
     end
 
     [aLabel, ~, ~] = el_anatomicLabelFS( ...
-        coord_nat, atlas_path, fs_lut_path, 0 ...
+        pos_nat, atlas_path, fs_lut_path, 0 ...
         );
 
     tbl.(atlas_name) = aLabel';
 
+end
+if n_atlas < 3
+    error("Not enough atlases to read from. " + ...
+        "Please check if recon-all and mgz2nii were run successfully.")
 end
 
 % Separate virtual electrodes table

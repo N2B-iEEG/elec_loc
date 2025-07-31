@@ -15,7 +15,7 @@ for mgz = mgz_files'
     if is_aparc || is_hippo || is_thalamic
         i_mgz_path = fullfile(mgz.folder, mgz.name);
         i_nii_path = fullfile(mgz.folder, [mgz.name(1:end-3) 'nii']);
-        bash_code = sprintf('%s; mri_convert --in_type mgz --out_type nii --out_orientation RAS %s %s', ...
+        bash_code = sprintf('%s; mri_convert -it mgz -ot nii --out_orientation RAS %s %s', ...
             bash_code, i_mgz_path, i_nii_path);
 
     end

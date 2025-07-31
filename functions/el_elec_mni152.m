@@ -23,6 +23,12 @@ n_elec = length(elec);
 pos_nat = [[elec.x]', [elec.y]', [elec.z]', ones(n_elec, 1)];
 pos_152 = trans_matrix * pos_nat';
 
+% Get Harvard-Oxford labels
+col_names = ["Harvard-Oxford 1", "Harvard-Oxford 2", "Harvard-Oxford 3", ...
+    "Harvard-Oxford 4", "Harvard-Oxford 5", "Harvard-Oxford 6"];
+[HO_labels, ~, ~] = anatomicLabel(pos_152(1:3,:)');
+labels_table = array2table(HO_labels, 'VariableNames', col_names);
+
 name = {elec.name}';
 x = pos_152(1,:)';
 y = pos_152(2,:)';
@@ -34,15 +40,17 @@ type  = {elec.type}';
 [size, material, manufacturer, hemisphere, impedance, dimension] = ...
     deal(repmat("n/a", n_elec, 1));
 
-node_size = 2 * ones(length(name), 1); % Macro size : 2mm
+% Differentiate macro and micro by size and color
+node_size = 2 * ones(length(name), 1);
 node_size(is_micro) = 1.5;
-
 color = ones(length(name), 1);
 color(is_micro) = 2;
 
+% Construct table
 tbl = table( ...
     name, x, y, z, size, material, manufacturer, group, hemisphere, ...
     type, impedance, dimension);
+tbl = [tbl, labels_table];
 tbl_node = table(x, y, z, color, node_size, name);
 
 % Separate virtual electrodes table
@@ -66,8 +74,8 @@ end
 options = fullfile(cfg.dir_el, 'bnv_options.mat');
 surf    = fullfile(cfg.dir_bnv_templates, 'BrainMesh_ICBM152.nv');
 
-H = BrainNet_MapCfg(surf, node_path, options, gb_path);
-close(H)
+HO_labels = BrainNet_MapCfg(surf, node_path, options, gb_path);
+close(HO_labels)
 
 %% Display
 fprintf(['Electrode location (MNI152 space) saved:\n' ...
