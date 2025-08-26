@@ -24,9 +24,9 @@ pos_nat = [[elec.x]', [elec.y]', [elec.z]', ones(n_elec, 1)];
 pos_152 = trans_matrix * pos_nat';
 
 % Get Harvard-Oxford labels
-col_names = ["Harvard-Oxford 1", "Harvard-Oxford 2", "Harvard-Oxford 3", ...
-    "Harvard-Oxford 4", "Harvard-Oxford 5", "Harvard-Oxford 6"];
 [HO_labels, ~, ~] = anatomicLabel(pos_152(1:3,:)');
+ncols = size(HO_labels, 2);
+col_names = arrayfun(@(x) sprintf('Harvard-Oxford %d', x), 1:ncols, 'UniformOutput', false);
 labels_table = array2table(HO_labels, 'VariableNames', col_names);
 
 name = {elec.name}';
@@ -37,7 +37,7 @@ group = {elec.group}';
 type  = {elec.type}';
 
 % Unknown columns required by BIDS
-[size, material, manufacturer, hemisphere, impedance, dimension] = ...
+[elec_size, material, manufacturer, hemisphere, impedance, dimension] = ...
     deal(repmat("n/a", n_elec, 1));
 
 % Differentiate macro and micro by size and color
@@ -48,7 +48,7 @@ color(is_micro) = 2;
 
 % Construct table
 tbl = table( ...
-    name, x, y, z, size, material, manufacturer, group, hemisphere, ...
+    name, x, y, z, elec_size, material, manufacturer, group, hemisphere, ...
     type, impedance, dimension);
 tbl = [tbl, labels_table];
 tbl_node = table(x, y, z, color, node_size, name);
